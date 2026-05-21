@@ -2,1584 +2,299 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fotos 360° — Joanfe Ribes Oficina Tècnica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#4A8A80">
+<title>Visor 360° — Joanfe Ribes Oficina Tècnica</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
 
 <style>
 :root {
   --azul: #4A8A80;
-  --azul-oscuro: #3d7269;
   --verde: #7AADA3;
   --gris-fondo: #f5f5f5;
   --gris-medio: #e0e0e0;
-  --gris-claro: #f9f9f9;
   --gris-texto: #555;
-  --gris-borde: #ccc;
   --texto: #222;
   --rojo: #d9534f;
-  --naranja: #f0ad4e;
-  --verde-ok: #5cb85c;
-  --azul-info: #5bc0de;
   --sombra: 0 2px 6px rgba(0,0,0,0.08);
-  --sombra-fuerte: 0 4px 12px rgba(0,0,0,0.12);
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  background: var(--gris-fondo);
-  color: var(--texto);
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-/* ===== Header ===== */
-.header {
-  background: var(--azul);
-  color: white;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.header .logo {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  opacity: 0.85;
-}
-
-.header h1 {
-  flex: 1;
-  font-size: 19px;
-  font-weight: 600;
-}
-
-.header .version {
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-/* ===== Banner pendientes ===== */
-.banner-pendientes {
-  background: #fff3cd;
-  border-bottom: 2px solid var(--naranja);
-  padding: 10px 24px;
-  display: none;
-  align-items: center;
-  gap: 14px;
-  font-size: 14px;
-  color: #856404;
-}
-
-.banner-pendientes.visible { display: flex; }
-
-.banner-pendientes .icono { font-size: 18px; }
-.banner-pendientes .texto { flex: 1; }
-.banner-pendientes button {
-  background: var(--naranja);
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-}
-.banner-pendientes button:hover { background: #ec971f; }
-
-/* ===== Pestañas ===== */
-.tabs {
-  background: white;
-  border-bottom: 1px solid var(--gris-borde);
-  padding: 0 24px;
-  display: flex;
-  gap: 4px;
-}
-
-.tab {
-  background: none;
-  border: none;
-  padding: 14px 20px;
-  font-size: 15px;
-  color: var(--gris-texto);
-  cursor: pointer;
-  font-weight: 500;
-  border-bottom: 3px solid transparent;
-  transition: all 0.15s;
-}
-
-.tab:hover { color: var(--azul); }
-
-.tab.active {
-  color: var(--azul);
-  border-bottom-color: var(--azul);
-}
-
-.tab .badge {
-  background: var(--naranja);
-  color: white;
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-size: 11px;
-  margin-left: 6px;
-}
-
-/* ===== Contenedor principal ===== */
-.contenedor {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-.panel { display: none; }
-.panel.active { display: block; }
-
-/* ===== Paso (cada sección) ===== */
-.paso {
-  background: white;
-  border-radius: 12px;
-  padding: 20px 24px;
-  margin-bottom: 16px;
-  box-shadow: var(--sombra);
-}
-
-.paso h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--azul);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.paso h2 .num {
-  background: var(--azul);
-  color: white;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-}
-
-/* ===== Selector de fotos ===== */
-.dropzone {
-  border: 2px dashed var(--gris-borde);
-  border-radius: 10px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--gris-claro);
-}
-
-.dropzone:hover, .dropzone.dragover {
-  border-color: var(--azul);
-  background: rgba(74,138,128,0.05);
-}
-
-.dropzone .icono {
-  font-size: 48px;
-  margin-bottom: 12px;
-  opacity: 0.5;
-}
-
-.dropzone .texto-principal {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--texto);
-  margin-bottom: 6px;
-}
-
-.dropzone .texto-secundario {
-  font-size: 13px;
-  color: var(--gris-texto);
-}
-
-#fileInput { display: none; }
-
-/* ===== Selector de destino ===== */
-.destino-opciones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.opcion-destino {
-  border: 2px solid var(--gris-borde);
-  border-radius: 8px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: all 0.15s;
-  background: white;
-}
-
-.opcion-destino:hover { border-color: var(--azul); }
-.opcion-destino.selected {
-  border-color: var(--azul);
-  background: rgba(74,138,128,0.08);
-}
-
-.opcion-destino .titulo {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.opcion-destino .descripcion {
-  font-size: 12px;
-  color: var(--gris-texto);
-}
-
-.campo-grupo {
-  margin-bottom: 12px;
-}
-
-.campo-grupo label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gris-texto);
-  margin-bottom: 5px;
-}
-
-.campo-grupo input, .campo-grupo select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--gris-borde);
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-  background: white;
-}
-
-.campo-grupo .hint {
-  font-size: 12px;
-  color: var(--gris-texto);
-  margin-top: 4px;
-}
-
-.bloque-condicional { display: none; margin-top: 12px; }
-.bloque-condicional.visible { display: block; }
-
-/* ===== Lista de fotos a subir ===== */
-.lista-fotos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-  margin-top: 12px;
-}
-
-.foto-card {
-  background: white;
-  border: 1px solid var(--gris-borde);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color 0.15s;
-}
-
-.foto-card.subiendo { border-color: var(--azul); }
-.foto-card.exito { border-color: var(--verde-ok); background: #f0f9eb; }
-.foto-card.error { border-color: var(--rojo); background: #fdf2f2; }
-.foto-card.no-360 { opacity: 0.5; }
-
-.foto-card .preview {
-  width: 100%;
-  aspect-ratio: 2/1;
-  background: #222;
-  position: relative;
-  overflow: hidden;
-}
-
-.foto-card .preview .pannellum-container {
-  width: 100%;
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #000; color: var(--texto); font-size: 16px;
 }
 
-.foto-card .preview .badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(74,138,128,0.95);
-  color: white;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  z-index: 5;
+.modo-foto { position: fixed; top:0; left:0; right:0; bottom:0; background:#000; }
+#panorama { width: 100%; height: 100%; }
+
+.barra-superior {
+  position: fixed; top:0; left:0; right:0;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.7), transparent);
+  z-index: 10; display: flex; align-items: center; gap: 12px; color: white;
+  pointer-events: none;
 }
-
-.foto-card .preview .badge.warning {
-  background: rgba(217,83,79,0.95);
+.barra-superior .logo {
+  background: var(--azul); color: white;
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+  pointer-events: auto;
 }
+.barra-superior .info { flex: 1; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.barra-superior .info .nombre { font-weight: 600; font-size: 14px; margin-bottom: 2px; word-break: break-all; }
+.barra-superior .info .fecha { font-size: 12px; color: #ddd; }
 
-.foto-card .info {
-  padding: 10px 12px;
+.cargando { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); color: white; text-align: center; z-index: 5; }
+.cargando .spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 0 auto 16px;
 }
-
-.foto-card .nombre {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--texto);
-  word-break: break-all;
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-
-.foto-card .meta {
-  font-size: 11px;
-  color: var(--gris-texto);
-  margin-bottom: 8px;
-}
-
-.foto-card .etiqueta-input {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--gris-borde);
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: inherit;
-}
-
-.foto-card .estado {
-  font-size: 12px;
-  margin-top: 8px;
-  padding: 6px 8px;
-  border-radius: 4px;
-  display: none;
-}
-
-.foto-card.subiendo .estado {
-  display: block;
-  background: rgba(74,138,128,0.1);
-  color: var(--azul);
-}
-
-.foto-card.exito .estado {
-  display: block;
-  background: rgba(92,184,92,0.15);
-  color: #3c763d;
-}
-
-.foto-card.error .estado {
-  display: block;
-  background: rgba(217,83,79,0.15);
-  color: #a94442;
-}
-
-.foto-card .acciones-foto {
-  display: none;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.foto-card.exito .acciones-foto { display: flex; }
-
-.btn-mini-accion {
-  flex: 1;
-  background: white;
-  border: 1px solid var(--azul);
-  color: var(--azul);
-  padding: 6px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-}
-
-.btn-mini-accion:hover { background: var(--azul); color: white; }
-
-.foto-card .barra-progreso {
-  height: 4px;
-  background: var(--gris-medio);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 6px;
-  display: none;
-}
-
-.foto-card.subiendo .barra-progreso { display: block; }
-
-.foto-card .barra-progreso .fill {
-  height: 100%;
-  background: var(--azul);
-  width: 0%;
-  transition: width 0.3s;
-}
-
-.foto-card .checkbox-cont {
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--gris-texto);
-}
-
-.foto-card .checkbox-cont input { cursor: pointer; }
-
-/* ===== Botones principales ===== */
-.acciones-globales {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 12px 22px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.btn-primario {
-  background: var(--azul);
-  color: white;
-}
-.btn-primario:hover:not(:disabled) { background: var(--azul-oscuro); }
-.btn-primario:disabled {
-  background: var(--gris-medio);
-  cursor: not-allowed;
-}
-
-.btn-secundario {
-  background: white;
-  color: var(--azul);
-  border: 1px solid var(--azul);
-}
-.btn-secundario:hover { background: rgba(74,138,128,0.08); }
-
-.btn-peligro {
-  background: white;
-  color: var(--rojo);
-  border: 1px solid var(--rojo);
-}
-.btn-peligro:hover { background: rgba(217,83,79,0.08); }
-
-.btn-grande {
-  padding: 14px 28px;
-  font-size: 16px;
-}
-
-/* ===== Panel resultado ===== */
-.resultado-final {
-  background: #f0f9eb;
-  border: 1px solid var(--verde-ok);
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-bottom: 16px;
-}
-
-.resultado-final h3 {
-  color: #3c763d;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.resultado-final p {
-  color: #3c763d;
-  font-size: 14px;
-}
-
-/* ===== Pestaña Pendientes ===== */
-.toma-card {
-  background: white;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 12px;
-  box-shadow: var(--sombra);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.toma-card .miniatura {
-  width: 100px;
-  height: 50px;
-  background: #222;
-  border-radius: 6px;
-  overflow: hidden;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.toma-card .miniatura img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.toma-card .miniatura .spinner-mini {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.toma-card .info {
-  flex: 1;
-  min-width: 0;
-}
-
-.toma-card .nombre {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--texto);
-  margin-bottom: 4px;
-}
-
-.toma-card .meta {
-  font-size: 13px;
-  color: var(--gris-texto);
-}
-
-.toma-card .acciones {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.toma-card .acciones .btn { padding: 8px 14px; font-size: 13px; }
-
-/* ===== Modal asignar ===== */
-.modal-fondo {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal-fondo.visible { display: flex; }
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: var(--sombra-fuerte);
-}
-
-.modal h2 {
-  margin-bottom: 12px;
-  color: var(--azul);
-  font-size: 18px;
-}
-
-.modal .descripcion {
-  color: var(--gris-texto);
-  margin-bottom: 16px;
-  font-size: 14px;
-}
-
-.modal-acciones {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-/* ===== Spinner ===== */
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.spinner.oscuro {
-  border-color: rgba(74,138,128,0.3);
-  border-top-color: var(--azul);
-}
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.cargando-pantalla {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--gris-texto);
-}
+.error { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); color: white; text-align: center; padding: 20px; max-width: 90%; z-index: 5; }
+.error h2 { color: var(--rojo); margin-bottom: 10px; }
 
-.cargando-pantalla .spinner {
-  width: 32px;
-  height: 32px;
-  margin: 0 auto 12px;
-  display: block;
-  border-color: rgba(74,138,128,0.3);
-  border-top-color: var(--azul);
+.modo-galeria { min-height: 100vh; background: var(--gris-fondo); color: var(--texto); }
+.galeria-header {
+  background: var(--azul); color: white;
+  padding: 20px 16px; position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+.galeria-header .logo-strip { font-size: 11px; opacity: 0.9; letter-spacing: 1px; margin-bottom: 6px; }
+.galeria-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.galeria-header .meta { font-size: 13px; opacity: 0.9; }
 
-/* ===== Toast ===== */
-.toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.85);
-  color: white;
-  padding: 14px 24px;
-  border-radius: 30px;
-  font-size: 14px;
-  z-index: 300;
-  opacity: 0;
-  transition: opacity 0.25s;
-  max-width: 90%;
+.galeria-contenido { padding: 16px; max-width: 1200px; margin: 0 auto; }
+.galeria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.galeria-item {
+  background: white; border-radius: 10px; overflow: hidden;
+  cursor: pointer; box-shadow: var(--sombra); transition: transform 0.15s;
 }
-
-.toast.visible { opacity: 1; }
-.toast.error { background: var(--rojo); }
-.toast.ok { background: var(--verde-ok); }
-
-/* ===== Banner config ===== */
-.config-banner {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 14px 24px;
-  text-align: center;
-  font-size: 14px;
-  border-bottom: 2px solid #f5c6cb;
-  display: none;
+.galeria-item:hover { transform: translateY(-2px); }
+.galeria-item:active { transform: scale(0.98); }
+.galeria-item .thumb { width: 100%; aspect-ratio: 2/1; background: #222; position: relative; overflow: hidden; }
+.galeria-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.galeria-item .thumb .badge-360 {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(74,138,128,0.95); color: white;
+  padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
 }
-.config-banner.visible { display: block; }
-
-@media (max-width: 600px) {
-  .destino-opciones { grid-template-columns: 1fr; }
-  .header { padding: 12px 16px; }
-  .contenedor { padding: 14px; }
-  .paso { padding: 16px; }
-  .toma-card { flex-wrap: wrap; }
+.galeria-item .thumb .spinner-mini {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 24px; height: 24px;
+  border: 3px solid rgba(255,255,255,0.3); border-top-color: white;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
 }
+.galeria-item .info { padding: 10px 12px; }
+.galeria-item .info .nombre { font-size: 13px; font-weight: 500; word-break: break-all; line-height: 1.3; }
+.galeria-item .info .fecha { font-size: 11px; color: var(--gris-texto); margin-top: 4px; }
+.galeria-vacia { text-align: center; padding: 80px 20px; color: var(--gris-texto); }
+
+.btn-volver-galeria {
+  position: fixed; top: 12px; right: 12px;
+  background: rgba(0,0,0,0.6); color: white; border: none;
+  padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; z-index: 100; display: none;
+}
+.btn-volver-galeria.visible { display: block; }
 </style>
 </head>
 <body>
 
-<div class="config-banner" id="configBanner">
-  ⚠️ Backend no configurado. Edita el archivo y configura BACKEND_URL y VISOR_URL.
-</div>
-
-<div class="header">
-  <div>
+<div id="modo-foto" class="modo-foto" style="display:none;">
+  <div class="barra-superior">
     <div class="logo">JOANFE RIBES · OFICINA TÈCNICA</div>
-    <h1 style="margin-top:4px;">📷 Fotos 360°</h1>
-  </div>
-  <div style="flex:1;"></div>
-  <div class="version">v1.0</div>
-</div>
-
-<div class="banner-pendientes" id="bannerPendientes">
-  <span class="icono">⚠️</span>
-  <span class="texto">Tienes <strong id="numPendientes">0</strong> tomas de datos pendientes de asignar a obras</span>
-  <button onclick="cambiarTab('pendientes')">Asignar ahora</button>
-</div>
-
-<div class="tabs">
-  <button class="tab active" data-tab="subir" onclick="cambiarTab('subir')">📤 Subir fotos</button>
-  <button class="tab" data-tab="pendientes" onclick="cambiarTab('pendientes')">
-    📋 Tomas pendientes <span class="badge" id="badgePendientes" style="display:none;">0</span>
-  </button>
-</div>
-
-<div class="contenedor">
-
-  <!-- ============= PANEL SUBIR ============= -->
-  <div class="panel active" id="panel-subir">
-    
-    <div class="paso">
-      <h2><span class="num">1</span> Selecciona las fotos 360° desde la cámara</h2>
-      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-        <div class="icono">📷</div>
-        <div class="texto-principal">Haz clic aquí o arrastra archivos</div>
-        <div class="texto-secundario">
-          Conecta la Theta SC2 por USB-C y selecciona las fotos JPG.<br>
-          Se detectarán automáticamente las que son 360°.
-        </div>
-      </div>
-      <input type="file" id="fileInput" accept="image/jpeg" multiple>
-    </div>
-    
-    <div class="paso" id="pasoDestino" style="display:none;">
-      <h2><span class="num">2</span> ¿A qué obra o toma pertenecen?</h2>
-      
-      <div class="destino-opciones">
-        <div class="opcion-destino selected" data-destino="obra" onclick="cambiarDestino('obra')">
-          <div class="titulo">📁 Obra existente</div>
-          <div class="descripcion">Las fotos se guardan en una obra ya creada</div>
-        </div>
-        <div class="opcion-destino" data-destino="toma" onclick="cambiarDestino('toma')">
-          <div class="titulo">📝 Nueva toma de datos</div>
-          <div class="descripcion">Visita previa sin obra todavía</div>
-        </div>
-      </div>
-      
-      <div class="bloque-condicional visible" id="bloqueObra">
-        <div class="campo-grupo">
-          <label>Selecciona la obra <span style="color:var(--rojo);">*</span></label>
-          <select id="selectObra">
-            <option value="">Cargando obras...</option>
-          </select>
-          <div class="hint">Solo se muestran obras Activas con carpeta Drive asignada</div>
-        </div>
-      </div>
-      
-      <div class="bloque-condicional" id="bloqueToma">
-        <div class="campo-grupo">
-          <label>Nombre tentativo <span style="color:var(--rojo);">*</span></label>
-          <input type="text" id="inputNombreToma" placeholder="Ej: Casa Pedreguer Carmen">
-          <div class="hint">Algo que te ayude a identificarla. Lo cambiarás cuando crees la obra formal.</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="paso" id="pasoFotos" style="display:none;">
-      <h2><span class="num">3</span> Revisa y sube las fotos</h2>
-      
-      <div id="listaFotos" class="lista-fotos"></div>
-      
-      <div class="acciones-globales">
-        <button class="btn btn-primario btn-grande" id="btnSubirTodas" onclick="subirSeleccionadas()">
-          📤 Subir las seleccionadas
-        </button>
-        <button class="btn btn-secundario" onclick="resetSubida()">
-          ↻ Empezar de nuevo
-        </button>
-      </div>
-    </div>
-    
-    <div id="resultadoFinal" style="display:none;">
-      <div class="resultado-final">
-        <h3>✓ <span id="resultadoTitulo">Subida completada</span></h3>
-        <p id="resultadoDetalle">Las fotos están disponibles en Drive y listas para compartir.</p>
-        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-primario" onclick="copiarTodosLosLinks()">📋 Copiar todos los links</button>
-          <button class="btn btn-secundario" onclick="abrirGaleriaCompleta()">🌐 Ver galería</button>
-          <button class="btn btn-secundario" onclick="resetSubida()">+ Subir más fotos</button>
-        </div>
-      </div>
-    </div>
-    
-  </div>
-  
-  <!-- ============= PANEL PENDIENTES ============= -->
-  <div class="panel" id="panel-pendientes">
-    <div class="paso">
-      <h2>📋 Tomas de datos pendientes de asignar</h2>
-      <p style="color:var(--gris-texto); font-size:13px; margin-bottom:14px;">
-        Cuando crees el expediente formal de la obra en tu app de Visita Obras, vuelve aquí
-        y asigna la toma de datos correspondiente. Las fotos se moverán a la carpeta de la obra.
-      </p>
-      <div id="listaPendientes">
-        <div class="cargando-pantalla">
-          <div class="spinner"></div>
-          <div>Cargando tomas pendientes...</div>
-        </div>
-      </div>
+    <div class="info">
+      <div class="nombre" id="info-nombre"></div>
+      <div class="fecha" id="info-fecha"></div>
     </div>
   </div>
-  
+  <div id="panorama"></div>
+  <div id="cargando" class="cargando">
+    <div class="spinner"></div>
+    <div>Cargando foto 360°...</div>
+  </div>
+  <div id="error" class="error" style="display:none;">
+    <h2>⚠️ Error</h2>
+    <p id="error-msg"></p>
+  </div>
+  <button class="btn-volver-galeria" id="btn-volver-galeria" onclick="window.history.back()">← Galería</button>
 </div>
 
-<!-- Modal asignar a obra -->
-<div class="modal-fondo" id="modalAsignar">
-  <div class="modal">
-    <h2>Asignar toma a una obra</h2>
-    <div class="descripcion">
-      Selecciona la obra a la que pertenece esta toma de datos.
-      Las fotos se moverán a la carpeta <code>FOTOS 360</code> de la obra.
-    </div>
-    
-    <div style="background:#f9f9f9; border-radius:6px; padding:10px 14px; margin-bottom:14px;">
-      <div style="font-size:12px; color:var(--gris-texto);">Toma de datos:</div>
-      <div style="font-weight:600;" id="modalNombreToma"></div>
-      <div style="font-size:12px; color:var(--gris-texto); margin-top:2px;" id="modalNumFotos"></div>
-    </div>
-    
-    <div class="campo-grupo">
-      <label>Obra destino</label>
-      <select id="modalSelectObra">
-        <option value="">Cargando...</option>
-      </select>
-    </div>
-    
-    <div class="modal-acciones">
-      <button class="btn btn-secundario" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn btn-primario" id="btnConfirmarAsignar" onclick="confirmarAsignar()">Asignar</button>
+<div id="modo-galeria" class="modo-galeria" style="display:none;">
+  <div class="galeria-header">
+    <div class="logo-strip">JOANFE RIBES · OFICINA TÈCNICA</div>
+    <h1 id="galeria-titulo">Galería 360°</h1>
+    <div class="meta" id="galeria-meta"></div>
+  </div>
+  <div class="galeria-contenido">
+    <div id="galeria-grid" class="galeria-grid">
+      <div class="galeria-vacia">Cargando fotos...</div>
     </div>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
 <script>
 // ============================================================================
-// CONFIGURACIÓN
+// CONFIGURACIÓN — Pega aquí la MISMA URL del Apps Script nuevo
 // ============================================================================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwAElsuhzGrK-8KGsRqYgQoDofMh3CH8hinxApIyztZHz5-bV3guPTiBM_Gkzubpc2klw/exec';
-const VISOR_URL = 'https://joanferibes.github.io/visor-360/';
+const BACKEND_URL = 'PEGAR_AQUI_URL_DEL_APPS_SCRIPT_NUEVO';
 
-// Tamaño objetivo para fotos web optimizadas
-const ANCHO_OBJETIVO = 4096;
-const ALTO_OBJETIVO = 2048;
-const CALIDAD_JPG = 0.85;
+const params = new URLSearchParams(window.location.search);
+const fileId = params.get('id');
+const carpetaId = params.get('carpeta');
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (fileId) iniciarModoFoto(fileId);
+  else if (carpetaId) iniciarModoGaleria(carpetaId);
+  else mostrarErrorInicial();
+});
+
+function mostrarErrorInicial() {
+  document.body.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f5f5f5; padding:20px; text-align:center;">
+      <div style="background:white; padding:40px 30px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:400px;">
+        <div style="background:#4A8A80; color:white; display:inline-block; padding:6px 12px; border-radius:4px; font-size:11px; font-weight:600; letter-spacing:1px; margin-bottom:20px;">
+          JOANFE RIBES · OFICINA TÈCNICA
+        </div>
+        <h2 style="color:#222; margin-bottom:10px;">Visor 360°</h2>
+        <p style="color:#555; font-size:14px;">
+          Este enlace no contiene una foto. La URL debe incluir <code style="background:#eee; padding:2px 6px; border-radius:3px;">?id=...</code> o <code style="background:#eee; padding:2px 6px; border-radius:3px;">?carpeta=...</code>
+        </p>
+      </div>
+    </div>
+  `;
+}
 
 // ============================================================================
-// ESTADO GLOBAL
+// MODO FOTO ÚNICA
 // ============================================================================
-let estado = {
-  fotosSeleccionadas: [],   // [{ file, blob, esFoto360, etiqueta, seleccionada, ... }]
-  obras: [],
-  destino: { tipo: 'obra' },
-  resultados: [],           // links generados tras subida
-  tomaPendiente: null,      // para modal asignar
-};
-
-let viewersActivos = [];    // viewers Pannellum para limpiarlos al resetear
-
-// ============================================================================
-// INICIALIZACIÓN
-// ============================================================================
-function init() {
-  if (BACKEND_URL.includes('PEGAR_AQUI')) {
-    document.getElementById('configBanner').classList.add('visible');
-    return;
+async function iniciarModoFoto(id) {
+  document.getElementById('modo-foto').style.display = 'block';
+  const ref = document.referrer;
+  if (ref && ref.includes('visor') && ref.includes('carpeta=')) {
+    document.getElementById('btn-volver-galeria').classList.add('visible');
   }
-  
-  // Drag & drop
-  const dz = document.getElementById('dropzone');
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-  dz.addEventListener('drop', e => {
-    e.preventDefault();
-    dz.classList.remove('dragover');
-    procesarArchivos(e.dataTransfer.files);
-  });
-  
-  document.getElementById('fileInput').addEventListener('change', e => {
-    procesarArchivos(e.target.files);
-  });
-  
-  // Cargar obras y tomas pendientes
-  cargarObras();
-  cargarPendientes();
-}
-
-// ============================================================================
-// COMUNICACIÓN BACKEND
-// ============================================================================
-async function backendGet(action, params = {}) {
-  const url = new URL(BACKEND_URL);
-  url.searchParams.set('action', action);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-async function backendPost(payload) {
-  const res = await fetch(BACKEND_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' }
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
-
-// ============================================================================
-// CARGAR OBRAS
-// ============================================================================
-async function cargarObras() {
   try {
-    const res = await backendGet('listObras', { estado: 'Activa' });
-    if (!res.ok) throw new Error(res.error);
-    
-    // Filtrar solo las que tienen carpeta Drive asignada
-    estado.obras = (res.obras || []).filter(o => o.carpetaDriveId);
-    
-    rellenarSelectObras('selectObra');
-    rellenarSelectObras('modalSelectObra');
-    
-  } catch (err) {
-    document.getElementById('selectObra').innerHTML = 
-      '<option value="">⚠️ Error al cargar obras: ' + escape(err.message) + '</option>';
-  }
-}
+    const url = new URL(BACKEND_URL);
+    url.searchParams.set('action', 'getFoto');
+    url.searchParams.set('fileId', id);
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
 
-function rellenarSelectObras(idSelect) {
-  const sel = document.getElementById(idSelect);
-  if (!sel) return;
-  
-  let html = '<option value="">-- Selecciona una obra --</option>';
-  estado.obras.forEach(o => {
-    const txt = o.nombreCorto + (o.municipio ? ' · ' + o.municipio : '');
-    html += '<option value="' + escape(o.id) + '">' + escape(txt) + '</option>';
-  });
-  sel.innerHTML = html;
-}
+    const blobUrl = URL.createObjectURL(base64ABlob(data.contenidoBase64, 'image/jpeg'));
 
-// ============================================================================
-// CARGAR TOMAS PENDIENTES
-// ============================================================================
-async function cargarPendientes() {
-  try {
-    const res = await backendGet('listarTomasDatos');
-    if (!res.ok) throw new Error(res.error);
-    
-    const tomas = res.tomas || [];
-    const banner = document.getElementById('bannerPendientes');
-    const badge = document.getElementById('badgePendientes');
-    
-    if (tomas.length > 0) {
-      banner.classList.add('visible');
-      document.getElementById('numPendientes').textContent = tomas.length;
-      badge.style.display = 'inline-block';
-      badge.textContent = tomas.length;
-    } else {
-      banner.classList.remove('visible');
-      badge.style.display = 'none';
+    if (data.nombre) document.getElementById('info-nombre').textContent = data.nombre;
+    if (data.fechaCreacion) {
+      document.getElementById('info-fecha').textContent =
+        new Date(data.fechaCreacion).toLocaleString('es-ES', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     }
-    
-    renderPendientes(tomas);
-    
+
+    pannellum.viewer('panorama', {
+      type: 'equirectangular', panorama: blobUrl,
+      autoLoad: true, autoRotate: -2, compass: true, showControls: true,
+      hfov: 100, minHfov: 50, maxHfov: 120, mouseZoom: true,
+      onLoad: () => { document.getElementById('cargando').style.display = 'none'; },
+      onError: (err) => { document.getElementById('cargando').style.display = 'none'; mostrarError('Error al renderizar: ' + err); }
+    });
   } catch (err) {
-    document.getElementById('listaPendientes').innerHTML = 
-      '<div class="cargando-pantalla">⚠️ Error: ' + escape(err.message) + '</div>';
+    mostrarError(err.message);
   }
 }
 
-function renderPendientes(tomas) {
-  const cont = document.getElementById('listaPendientes');
-  
-  if (tomas.length === 0) {
-    cont.innerHTML = '<div class="cargando-pantalla">' +
-      '<div style="font-size:48px; margin-bottom:12px;">✨</div>' +
-      '<div>No hay tomas de datos pendientes.</div>' +
-      '<div style="font-size:13px; margin-top:8px;">Todas las visitas previas están asignadas a su obra.</div>' +
-      '</div>';
+function mostrarError(msg) {
+  document.getElementById('cargando').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-msg').textContent = msg;
+}
+
+// ============================================================================
+// MODO GALERÍA
+// ============================================================================
+async function iniciarModoGaleria(cId) {
+  document.getElementById('modo-galeria').style.display = 'block';
+  document.body.style.background = '#f5f5f5';
+  try {
+    const url = new URL(BACKEND_URL);
+    url.searchParams.set('action', 'listarFotos');
+    url.searchParams.set('carpetaId', cId);
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+
+    document.getElementById('galeria-titulo').textContent = data.titulo || 'Galería 360°';
+    const n = (data.fotos||[]).length;
+    document.getElementById('galeria-meta').textContent = n===0 ? 'Sin fotos' : (n+' foto'+(n>1?'s':'')+' 360°');
+    renderGaleria(data.fotos || []);
+  } catch (err) {
+    document.getElementById('galeria-grid').innerHTML =
+      '<div class="galeria-vacia">⚠️ Error: ' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderGaleria(fotos) {
+  const grid = document.getElementById('galeria-grid');
+  if (fotos.length === 0) {
+    grid.innerHTML = '<div class="galeria-vacia"><div style="font-size:48px;margin-bottom:12px;">📷</div><div>No hay fotos 360°</div></div>';
     return;
   }
-  
-  cont.innerHTML = tomas.map(t => {
-    const fechaTxt = t.fecha ? new Date(t.fecha).toLocaleDateString('es-ES', { 
-      day:'2-digit', month:'short', year:'numeric' 
-    }) : '';
+  grid.innerHTML = fotos.map(f => {
+    const fecha = f.fechaCreacion ? new Date(f.fechaCreacion).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    const etiq = f.descripcion ? f.descripcion : f.nombre;
     return `
-      <div class="toma-card">
-        <div class="miniatura">
+      <div class="galeria-item" onclick="abrirFoto('${f.id}')">
+        <div class="thumb">
+          <div class="badge-360">360°</div>
           <div class="spinner-mini"></div>
-          <img data-id="${t.primeraFotoId}" alt="">
+          <img data-id="${f.id}" alt="">
         </div>
         <div class="info">
-          <div class="nombre">${escape(t.nombre)}</div>
-          <div class="meta">📷 ${t.numFotos} foto${t.numFotos > 1 ? 's' : ''} · ${fechaTxt}</div>
-        </div>
-        <div class="acciones">
-          <a class="btn btn-secundario" href="${t.urlGaleria}" target="_blank">👁️ Ver</a>
-          <button class="btn btn-primario" onclick="abrirModalAsignar('${escape(t.nombre)}', ${t.numFotos})">
-            ➡ Asignar
-          </button>
-          <button class="btn btn-peligro" onclick="borrarToma('${escape(t.nombre)}')">🗑️</button>
+          <div class="nombre">${escapeHtml(etiq||'')}</div>
+          <div class="fecha">${fecha}</div>
         </div>
       </div>
     `;
   }).join('');
-  
-  // Cargar miniaturas
-  cont.querySelectorAll('img[data-id]').forEach(img => cargarMiniatura(img));
+  grid.querySelectorAll('img[data-id]').forEach(img => cargarThumbnail(img));
 }
 
-async function cargarMiniatura(img) {
-  const id = img.dataset.id;
+async function cargarThumbnail(img) {
   try {
     const url = new URL(BACKEND_URL);
     url.searchParams.set('action', 'getThumbnail');
-    url.searchParams.set('fileId', id);
+    url.searchParams.set('fileId', img.dataset.id);
     url.searchParams.set('size', 'thumb');
     const res = await fetch(url.toString());
-    if (!res.ok) return;
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const base64 = await res.text();
-    const blob = base64ABlob(base64, 'image/jpeg');
-    img.src = URL.createObjectURL(blob);
-    img.onload = () => {
-      const spinner = img.parentElement.querySelector('.spinner-mini');
-      if (spinner) spinner.style.display = 'none';
-    };
-  } catch (e) { /* ignorar */ }
+    img.src = URL.createObjectURL(base64ABlob(base64, 'image/jpeg'));
+    img.onload = () => { const s = img.parentElement.querySelector('.spinner-mini'); if (s) s.style.display='none'; };
+  } catch (e) { console.error(e); }
 }
 
-// ============================================================================
-// MODAL ASIGNAR
-// ============================================================================
-function abrirModalAsignar(nombreToma, numFotos) {
-  estado.tomaPendiente = nombreToma;
-  document.getElementById('modalNombreToma').textContent = nombreToma;
-  document.getElementById('modalNumFotos').textContent = numFotos + ' foto' + (numFotos > 1 ? 's' : '');
-  document.getElementById('modalSelectObra').value = '';
-  document.getElementById('modalAsignar').classList.add('visible');
-}
-
-function cerrarModal() {
-  document.getElementById('modalAsignar').classList.remove('visible');
-  estado.tomaPendiente = null;
-}
-
-async function confirmarAsignar() {
-  const obraId = document.getElementById('modalSelectObra').value;
-  if (!obraId) {
-    toast('Selecciona una obra', 'error');
-    return;
-  }
-  if (!estado.tomaPendiente) return;
-  
-  const btn = document.getElementById('btnConfirmarAsignar');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Moviendo...';
-  
-  try {
-    const res = await backendPost({
-      action: 'asignarTomaDatosAObra',
-      nombreToma: estado.tomaPendiente,
-      obraId: obraId,
-    });
-    if (!res.ok) throw new Error(res.error);
-    
-    toast('✓ ' + res.movidos + ' fotos movidas a "' + res.obraNombre + '"', 'ok');
-    cerrarModal();
-    cargarPendientes();
-  } catch (err) {
-    toast('⚠️ Error: ' + err.message, 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = 'Asignar';
-  }
-}
-
-async function borrarToma(nombreToma) {
-  if (!confirm('¿Borrar la toma "' + nombreToma + '"?\n\nSe enviará a la papelera de Drive (recuperable durante 30 días).')) return;
-  
-  try {
-    const res = await backendPost({ action: 'borrarTomaDatos', nombreToma });
-    if (!res.ok) throw new Error(res.error);
-    toast('✓ Toma borrada', 'ok');
-    cargarPendientes();
-  } catch (err) {
-    toast('⚠️ Error: ' + err.message, 'error');
-  }
-}
-
-// ============================================================================
-// PESTAÑAS
-// ============================================================================
-function cambiarTab(nombre) {
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === nombre);
-  });
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('active', p.id === 'panel-' + nombre);
-  });
-  if (nombre === 'pendientes') cargarPendientes();
-}
-
-// ============================================================================
-// PROCESAMIENTO DE ARCHIVOS
-// ============================================================================
-async function procesarArchivos(files) {
-  const lista = Array.from(files).filter(f => 
-    f.type === 'image/jpeg' || f.name.toLowerCase().endsWith('.jpg') || f.name.toLowerCase().endsWith('.jpeg')
-  );
-  
-  if (lista.length === 0) {
-    toast('Selecciona archivos JPG', 'error');
-    return;
-  }
-  
-  toast('Procesando ' + lista.length + ' archivo' + (lista.length > 1 ? 's' : '') + '...');
-  
-  // Mostrar pasos 2 y 3
-  document.getElementById('pasoDestino').style.display = 'block';
-  document.getElementById('pasoFotos').style.display = 'block';
-  
-  // Limpiar viewers anteriores
-  destruirViewers();
-  estado.fotosSeleccionadas = [];
-  
-  // Procesar cada archivo
-  for (const file of lista) {
-    const foto = {
-      file,
-      esFoto360: false,
-      seleccionada: true,
-      etiqueta: '',
-      blob: null,
-      preview: null,
-      id: 'foto-' + Math.random().toString(36).substring(2, 11),
-    };
-    estado.fotosSeleccionadas.push(foto);
-  }
-  
-  renderListaFotos();
-  
-  // Comprobar 360 y crear preview de cada una
-  for (let i = 0; i < estado.fotosSeleccionadas.length; i++) {
-    await analizarFoto(estado.fotosSeleccionadas[i]);
-  }
-  
-  scrollToElement('pasoDestino');
-}
-
-async function analizarFoto(foto) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      const ratio = img.width / img.height;
-      // Foto 360 equirectangular: ratio 2:1 (con tolerancia)
-      foto.esFoto360 = ratio >= 1.9 && ratio <= 2.1;
-      foto.ancho = img.width;
-      foto.alto = img.height;
-      
-      if (!foto.esFoto360) foto.seleccionada = false;
-      
-      actualizarCardFoto(foto);
-      
-      // Si es 360, crear previsualización Pannellum
-      if (foto.esFoto360) {
-        crearPreviewPannellum(foto, img.src);
-      }
-      
-      resolve();
-    };
-    img.onerror = () => {
-      foto.error = 'No se pudo leer';
-      actualizarCardFoto(foto);
-      resolve();
-    };
-    img.src = URL.createObjectURL(foto.file);
-  });
-}
-
-function crearPreviewPannellum(foto, src) {
-  // Crear viewer dentro del contenedor de la card
-  try {
-    const cont = document.querySelector('[data-foto-id="' + foto.id + '"] .pannellum-container');
-    if (!cont) return;
-    
-    const viewer = pannellum.viewer(cont, {
-      type: 'equirectangular',
-      panorama: src,
-      autoLoad: true,
-      autoRotate: -3,
-      showControls: false,
-      showZoomCtrl: false,
-      showFullscreenCtrl: false,
-      mouseZoom: false,
-      keyboardZoom: false,
-      hfov: 90,
-    });
-    viewersActivos.push(viewer);
-    foto.viewer = viewer;
-  } catch (e) {
-    console.error('Error creando preview:', e);
-  }
-}
-
-function destruirViewers() {
-  viewersActivos.forEach(v => {
-    try { v.destroy(); } catch (e) {}
-  });
-  viewersActivos = [];
-}
-
-// ============================================================================
-// RENDERIZADO
-// ============================================================================
-function renderListaFotos() {
-  const cont = document.getElementById('listaFotos');
-  
-  cont.innerHTML = estado.fotosSeleccionadas.map(f => {
-    return `
-      <div class="foto-card" data-foto-id="${f.id}">
-        <div class="preview">
-          <div class="badge" id="badge-${f.id}">Analizando...</div>
-          <div class="pannellum-container"></div>
-        </div>
-        <div class="info">
-          <div class="checkbox-cont">
-            <input type="checkbox" id="check-${f.id}" ${f.seleccionada ? 'checked' : ''} 
-              onchange="toggleSeleccion('${f.id}', this.checked)">
-            <label for="check-${f.id}">Subir esta</label>
-          </div>
-          <div class="nombre">${escape(f.file.name)}</div>
-          <div class="meta" id="meta-${f.id}">Procesando...</div>
-          <input type="text" class="etiqueta-input" placeholder="Etiqueta opcional (salón, fachada, ...)"
-            onchange="actualizarEtiqueta('${f.id}', this.value)">
-          <div class="estado" id="estado-${f.id}"></div>
-          <div class="barra-progreso"><div class="fill" id="barra-${f.id}"></div></div>
-          <div class="acciones-foto" id="acciones-${f.id}"></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function actualizarCardFoto(foto) {
-  const card = document.querySelector('[data-foto-id="' + foto.id + '"]');
-  if (!card) return;
-  
-  const badge = card.querySelector('#badge-' + foto.id);
-  const meta = card.querySelector('#meta-' + foto.id);
-  const check = card.querySelector('#check-' + foto.id);
-  
-  if (foto.esFoto360) {
-    badge.textContent = '360°';
-    badge.classList.remove('warning');
-    meta.textContent = foto.ancho + ' × ' + foto.alto + ' · ' + Math.round(foto.file.size/1024) + ' KB';
-  } else {
-    badge.textContent = 'No es 360°';
-    badge.classList.add('warning');
-    meta.textContent = (foto.ancho || '?') + ' × ' + (foto.alto || '?') + ' (ratio no 2:1)';
-    card.classList.add('no-360');
-    if (check) check.checked = false;
-  }
-}
-
-function toggleSeleccion(id, val) {
-  const foto = estado.fotosSeleccionadas.find(f => f.id === id);
-  if (foto) foto.seleccionada = val;
-}
-
-function actualizarEtiqueta(id, val) {
-  const foto = estado.fotosSeleccionadas.find(f => f.id === id);
-  if (foto) foto.etiqueta = val.trim();
-}
-
-// ============================================================================
-// CAMBIO DE DESTINO
-// ============================================================================
-function cambiarDestino(tipo) {
-  estado.destino.tipo = tipo;
-  document.querySelectorAll('.opcion-destino').forEach(o => {
-    o.classList.toggle('selected', o.dataset.destino === tipo);
-  });
-  document.getElementById('bloqueObra').classList.toggle('visible', tipo === 'obra');
-  document.getElementById('bloqueToma').classList.toggle('visible', tipo === 'toma');
-}
-
-// ============================================================================
-// SUBIDA
-// ============================================================================
-async function subirSeleccionadas() {
-  const seleccionadas = estado.fotosSeleccionadas.filter(f => f.seleccionada && f.esFoto360);
-  if (seleccionadas.length === 0) {
-    toast('No hay fotos 360° seleccionadas', 'error');
-    return;
-  }
-  
-  // Validar destino
-  let destino;
-  let nombreContexto;
-  
-  if (estado.destino.tipo === 'obra') {
-    const obraId = document.getElementById('selectObra').value;
-    if (!obraId) { toast('Selecciona una obra', 'error'); return; }
-    const obra = estado.obras.find(o => o.id === obraId);
-    destino = { tipo: 'obra', obraId };
-    nombreContexto = (obra && obra.nombreCorto) || 'Obra';
-  } else {
-    const nombre = document.getElementById('inputNombreToma').value.trim();
-    if (!nombre) { toast('Escribe un nombre tentativo', 'error'); return; }
-    destino = { tipo: 'toma', nombreTentativo: nombre };
-    nombreContexto = nombre;
-  }
-  
-  document.getElementById('btnSubirTodas').disabled = true;
-  document.getElementById('btnSubirTodas').innerHTML = '<span class="spinner"></span> Subiendo...';
-  
-  estado.resultados = [];
-  let exitos = 0;
-  let errores = 0;
-  
-  // Subir una a una
-  for (let i = 0; i < seleccionadas.length; i++) {
-    const foto = seleccionadas[i];
-    const correlativo = String(i + 1).padStart(3, '0');
-    const ok = await subirFoto(foto, destino, nombreContexto, correlativo);
-    if (ok) exitos++;
-    else errores++;
-  }
-  
-  document.getElementById('btnSubirTodas').disabled = false;
-  document.getElementById('btnSubirTodas').innerHTML = '📤 Subir las seleccionadas';
-  
-  // Mostrar resultado final
-  const resultado = document.getElementById('resultadoFinal');
-  resultado.style.display = 'block';
-  document.getElementById('resultadoTitulo').textContent = 
-    exitos + ' foto' + (exitos !== 1 ? 's' : '') + ' subida' + (exitos !== 1 ? 's' : '') +
-    (errores > 0 ? ' (' + errores + ' con error)' : '');
-  document.getElementById('resultadoDetalle').textContent = 
-    'Destino: ' + nombreContexto + (estado.destino.tipo === 'toma' ? ' (toma de datos pendiente)' : '');
-  
-  scrollToElement('resultadoFinal');
-  
-  // Refrescar pendientes
-  cargarPendientes();
-}
-
-async function subirFoto(foto, destino, nombreContexto, correlativo) {
-  const card = document.querySelector('[data-foto-id="' + foto.id + '"]');
-  card.classList.add('subiendo');
-  card.classList.remove('error', 'exito');
-  
-  const estadoEl = card.querySelector('#estado-' + foto.id);
-  const barra = card.querySelector('#barra-' + foto.id);
-  
-  try {
-    // Comprimir
-    estadoEl.textContent = 'Comprimiendo...';
-    barra.style.width = '20%';
-    const blob = await comprimirImagen(foto.file, ANCHO_OBJETIVO, ALTO_OBJETIVO, CALIDAD_JPG);
-    
-    // Generar nombre
-    const slug = slugify(nombreContexto);
-    const fecha = formatearFecha(new Date());
-    const nombre = slug + '_' + fecha + '_' + correlativo + '.jpg';
-    
-    // Convertir a base64
-    estadoEl.textContent = 'Preparando...';
-    barra.style.width = '40%';
-    const base64 = await blobABase64(blob);
-    
-    // Subir
-    estadoEl.textContent = 'Subiendo a Drive...';
-    barra.style.width = '70%';
-    const res = await backendPost({
-      action: 'subirFoto360',
-      destino,
-      contenidoBase64: base64,
-      nombre,
-      etiqueta: foto.etiqueta || null,
-    });
-    
-    if (!res.ok) throw new Error(res.error);
-    
-    barra.style.width = '100%';
-    estadoEl.textContent = '✓ Subida correctamente';
-    card.classList.remove('subiendo');
-    card.classList.add('exito');
-    
-    // Guardar resultado y mostrar botones
-    const resultado = {
-      nombre,
-      etiqueta: foto.etiqueta,
-      archivoId: res.archivoId,
-      urlVisor: res.urlVisor,
-    };
-    estado.resultados.push(resultado);
-    
-    // Botones acciones
-    const acciones = card.querySelector('#acciones-' + foto.id);
-    acciones.innerHTML = `
-      <a class="btn-mini-accion" href="${res.urlVisor}" target="_blank">👁️ Ver 360°</a>
-      <button class="btn-mini-accion" onclick="copiarTexto('${res.urlVisor}')">📋 Copiar link</button>
-    `;
-    
-    return true;
-    
-  } catch (err) {
-    card.classList.remove('subiendo');
-    card.classList.add('error');
-    estadoEl.textContent = '⚠️ Error: ' + err.message;
-    return false;
-  }
-}
-
-// ============================================================================
-// COMPRESIÓN
-// ============================================================================
-async function comprimirImagen(file, anchoMax, altoMax, calidad) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      let ancho = img.width;
-      let alto = img.height;
-      
-      // Redimensionar si excede
-      if (ancho > anchoMax || alto > altoMax) {
-        const ratioAncho = anchoMax / ancho;
-        const ratioAlto = altoMax / alto;
-        const ratio = Math.min(ratioAncho, ratioAlto);
-        ancho = Math.round(ancho * ratio);
-        alto = Math.round(alto * ratio);
-      }
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = ancho;
-      canvas.height = alto;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, ancho, alto);
-      
-      canvas.toBlob(blob => {
-        URL.revokeObjectURL(img.src);
-        resolve(blob);
-      }, 'image/jpeg', calidad);
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(file);
-  });
-}
-
-function blobABase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result;
-      const base64 = result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-function base64ABlob(base64, mimeType) {
-  const bytes = atob(base64);
-  const arr = new Uint8Array(bytes.length);
-  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-  return new Blob([arr], { type: mimeType });
-}
+function abrirFoto(id) { window.location.href = '?id=' + encodeURIComponent(id); }
 
 // ============================================================================
 // UTILIDADES
 // ============================================================================
-function slugify(s) {
-  return String(s)
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]/g, '')
-    .substring(0, 30);
+function base64ABlob(base64, mime) {
+  const b = atob(base64); const arr = new Uint8Array(b.length);
+  for (let i=0;i<b.length;i++) arr[i] = b.charCodeAt(i);
+  return new Blob([arr], { type: mime });
 }
-
-function formatearFecha(d) {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const HH = String(d.getHours()).padStart(2, '0');
-  const MM = String(d.getMinutes()).padStart(2, '0');
-  return yyyy + mm + dd + '_' + HH + MM;
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-function escape(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, c => 
-    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])
-  );
-}
-
-function copiarTexto(t) {
-  navigator.clipboard.writeText(t).then(() => {
-    toast('✓ Link copiado', 'ok');
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = t;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    toast('✓ Link copiado', 'ok');
-  });
-}
-
-function copiarTodosLosLinks() {
-  if (estado.resultados.length === 0) return;
-  
-  const lineas = estado.resultados.map((r, i) => {
-    let l = 'Foto ' + String(i + 1).padStart(3, '0');
-    if (r.etiqueta) l += ' — ' + r.etiqueta;
-    l += '\n' + r.urlVisor;
-    return l;
-  });
-  
-  const texto = lineas.join('\n\n');
-  copiarTexto(texto);
-}
-
-function abrirGaleriaCompleta() {
-  if (estado.destino.tipo === 'obra') {
-    const obraId = document.getElementById('selectObra').value;
-    if (obraId) window.open(VISOR_URL + '?obra=' + encodeURIComponent(obraId), '_blank');
-  } else {
-    const nombre = document.getElementById('inputNombreToma').value.trim();
-    if (nombre) window.open(VISOR_URL + '?toma=' + encodeURIComponent(nombre), '_blank');
-  }
-}
-
-function resetSubida() {
-  destruirViewers();
-  estado.fotosSeleccionadas = [];
-  estado.resultados = [];
-  document.getElementById('listaFotos').innerHTML = '';
-  document.getElementById('pasoDestino').style.display = 'none';
-  document.getElementById('pasoFotos').style.display = 'none';
-  document.getElementById('resultadoFinal').style.display = 'none';
-  document.getElementById('fileInput').value = '';
-  document.getElementById('inputNombreToma').value = '';
-  scrollToElement('dropzone');
-}
-
-function scrollToElement(id) {
-  setTimeout(() => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
-}
-
-let toastTimeout = null;
-function toast(msg, tipo) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast visible' + (tipo ? ' ' + tipo : '');
-  if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => el.classList.remove('visible'), 2800);
-}
-
-init();
 </script>
 </body>
 </html>
