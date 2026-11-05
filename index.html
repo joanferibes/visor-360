@@ -247,14 +247,30 @@ async function iniciarModoFoto(id) {
     visorPannellum = pannellum.viewer('panorama', {
       type: 'equirectangular', panorama: blobUrl,
       autoLoad: true, autoRotate: -2, compass: true, showControls: true,
-      hfov: 100, minHfov: 50, maxHfov: 120, mouseZoom: true,
-      onLoad: () => {
-        document.getElementById('cargando').style.display = 'none';
-        // Mostrar botón de captura cuando la foto esté lista
-        document.getElementById('btn-captura').classList.add('visible');
-      },
-      onError: (err) => { document.getElementById('cargando').style.display = 'none'; mostrarError('Error al renderizar: ' + err); }
+      hfov: 100, minHfov: 50, maxHfov: 120, mouseZoom: true
     });
+
+    // Función que oculta "Cargando" y muestra el botón de captura
+    const vistaLista = () => {
+      const car = document.getElementById('cargando');
+      if (car) car.style.display = 'none';
+      const btn = document.getElementById('btn-captura');
+      if (btn) btn.classList.add('visible');
+    };
+
+    // 1) Registrar callbacks de Pannellum con .on() (mas fiable que config)
+    try {
+      visorPannellum.on('load', vistaLista);
+      visorPannellum.on('error', (err) => {
+        const car = document.getElementById('cargando');
+        if (car) car.style.display = 'none';
+        mostrarError('Error al renderizar: ' + err);
+      });
+    } catch (e) { console.warn('No se pudo registrar callbacks de Pannellum:', e); }
+
+    // 2) Plan B: si por lo que sea 'load' no se dispara, forzar la vista lista
+    //    tras 2.5 segundos (tiempo suficiente para que la imagen cargue)
+    setTimeout(vistaLista, 2500);
   } catch (err) {
     mostrarError(err.message);
   }
