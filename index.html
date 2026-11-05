@@ -101,6 +101,42 @@ html, body {
   cursor: pointer; z-index: 100; display: none;
 }
 .btn-volver-galeria.visible { display: block; }
+
+/* Botón de captura: abajo a la derecha, sobre el visor */
+.btn-captura {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--azul); color: white; border: none;
+  padding: 12px 18px; border-radius: 30px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: none; align-items: center; gap: 8px;
+}
+.btn-captura.visible { display: inline-flex; }
+.btn-captura:hover:not(:disabled) { background: #3d7269; }
+.btn-captura:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-captura .mini-spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+
+/* Toast de feedback */
+.toast-captura {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.9); color: white;
+  padding: 12px 22px; border-radius: 24px;
+  font-size: 14px; z-index: 200;
+  opacity: 0; transition: opacity 0.3s;
+  max-width: 90%; text-align: center;
+}
+.toast-captura.visible { opacity: 1; }
+.toast-captura.ok { background: var(--verde); }
+.toast-captura.error { background: var(--rojo); }
+
+@media (max-width: 600px) {
+  .btn-captura { bottom: 16px; right: 16px; padding: 10px 14px; font-size: 13px; }
+}
 </style>
 </head>
 <body>
@@ -123,6 +159,8 @@ html, body {
     <p id="error-msg"></p>
   </div>
   <button class="btn-volver-galeria" id="btn-volver-galeria" onclick="window.history.back()">← Galería</button>
+  <button class="btn-captura" id="btn-captura" onclick="capturarVista()" title="Descargar una foto plana de la vista actual">📸 Capturar vista</button>
+  <div class="toast-captura" id="toast-captura"></div>
 </div>
 
 <div id="modo-galeria" class="modo-galeria" style="display:none;">
@@ -149,6 +187,10 @@ const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyi7J4Z4-8r3GuPogcA
 const params = new URLSearchParams(window.location.search);
 const fileId = params.get('id');
 const carpetaId = params.get('carpeta');
+
+// Estado del visor (para la función de captura)
+let visorPannellum = null;
+let fotoInfo = { nombre: '', carpetaNombre: '' };
 
 window.addEventListener('DOMContentLoaded', () => {
   if (fileId) iniciarModoFoto(fileId);
@@ -198,11 +240,19 @@ async function iniciarModoFoto(id) {
         new Date(data.fechaCreacion).toLocaleString('es-ES', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     }
 
-    pannellum.viewer('panorama', {
+    // Guardar info para la captura
+    fotoInfo.nombre = (data.nombre || '').replace(/\.jpe?g$/i, '');
+    fotoInfo.carpetaNombre = data.carpetaNombre || '';
+
+    visorPannellum = pannellum.viewer('panorama', {
       type: 'equirectangular', panorama: blobUrl,
       autoLoad: true, autoRotate: -2, compass: true, showControls: true,
       hfov: 100, minHfov: 50, maxHfov: 120, mouseZoom: true,
-      onLoad: () => { document.getElementById('cargando').style.display = 'none'; },
+      onLoad: () => {
+        document.getElementById('cargando').style.display = 'none';
+        // Mostrar botón de captura cuando la foto esté lista
+        document.getElementById('btn-captura').classList.add('visible');
+      },
       onError: (err) => { document.getElementById('cargando').style.display = 'none'; mostrarError('Error al renderizar: ' + err); }
     });
   } catch (err) {
@@ -282,6 +332,200 @@ async function cargarThumbnail(img) {
 }
 
 function abrirFoto(id) { window.location.href = '?id=' + encodeURIComponent(id); }
+
+// ============================================================================
+// CAPTURA DE VISTA (foto plana de lo que se ve ahora)
+// ============================================================================
+async function capturarVista() {
+  const btn = document.getElementById('btn-captura');
+  const textoOriginal = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="mini-spin"></span> Capturando...';
+
+  try {
+    if (!visorPannellum) throw new Error('Visor no listo');
+
+    // Pequeña espera para que Pannellum termine de renderizar
+    await new Promise(r => setTimeout(r, 50));
+
+    // 1) Intentar capturar desde el canvas de Pannellum (alta calidad real)
+    let dataURL = null;
+    try {
+      const renderer = visorPannellum.getRenderer && visorPannellum.getRenderer();
+      if (renderer && renderer.render) {
+        renderer.render();
+      }
+      const canvas = document.querySelector('#panorama canvas');
+      if (canvas) {
+        try {
+          dataURL = canvas.toDataURL('image/jpeg', 0.95);
+          // Si por preserveDrawingBuffer=false sale negro, dataURL puede ser una imagen vacía
+          if (!esDataURLConContenido(dataURL)) dataURL = null;
+        } catch (e) { dataURL = null; }
+      }
+    } catch (e) { /* intentará método 2 */ }
+
+    // 2) Método alternativo: generar la captura en un canvas aparte proyectando
+    //    la vista equirectangular. Más robusto, siempre funciona.
+    if (!dataURL) {
+      dataURL = await capturarProyectandoEquirect();
+    }
+
+    // Descargar
+    const nombreFichero = construirNombreCaptura();
+    descargarDataURL(dataURL, nombreFichero);
+    mostrarToast('✓ Captura descargada', 'ok');
+  } catch (err) {
+    console.error(err);
+    mostrarToast('⚠️ Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = textoOriginal;
+  }
+}
+
+// Comprueba si un dataURL contiene algo (no es canvas vacío/negro)
+function esDataURLConContenido(dataURL) {
+  // Un canvas totalmente vacío/sin preserveDrawingBuffer da un data URL muy corto
+  return dataURL && dataURL.length > 2000;
+}
+
+// Método alternativo de captura: proyección equirectangular -> perspectiva
+// Replica la vista de Pannellum pero renderizando aparte, sin depender del canvas WebGL
+async function capturarProyectandoEquirect() {
+  // Leemos los parámetros actuales del visor
+  const yaw = visorPannellum.getYaw();     // -180..180
+  const pitch = visorPannellum.getPitch(); // -90..90
+  const hfov = visorPannellum.getHfov();   // grados
+
+  // Panorama equirectangular origen
+  const panoImg = await obtenerImagenPanoramaActual();
+
+  // Dimensiones de salida (alta calidad para informes)
+  const outW = 1920;
+  const outH = Math.round(outW * (window.innerHeight / window.innerWidth));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = outW; canvas.height = outH;
+  const ctx = canvas.getContext('2d');
+
+  // Para proyectar píxel a píxel usamos un canvas auxiliar con la imagen fuente
+  const src = document.createElement('canvas');
+  src.width = panoImg.naturalWidth; src.height = panoImg.naturalHeight;
+  src.getContext('2d').drawImage(panoImg, 0, 0);
+  const srcData = src.getContext('2d').getImageData(0, 0, src.width, src.height);
+  const srcPx = srcData.data;
+  const sw = src.width, sh = src.height;
+
+  const out = ctx.createImageData(outW, outH);
+  const outPx = out.data;
+
+  const hfovRad = hfov * Math.PI / 180;
+  const vfovRad = 2 * Math.atan(Math.tan(hfovRad/2) * (outH/outW));
+  const yawRad = yaw * Math.PI / 180;
+  const pitchRad = pitch * Math.PI / 180;
+
+  const cosP = Math.cos(pitchRad), sinP = Math.sin(pitchRad);
+  const cosY = Math.cos(yawRad), sinY = Math.sin(yawRad);
+
+  const fx = outW / (2 * Math.tan(hfovRad/2));
+  const fy = outH / (2 * Math.tan(vfovRad/2));
+  const cx = outW/2, cy = outH/2;
+
+  for (let y = 0; y < outH; y++) {
+    for (let x = 0; x < outW; x++) {
+      // Rayo en espacio cámara
+      const px = (x - cx) / fx;
+      const py = -(y - cy) / fy;
+      const pz = 1;
+      // Rotación pitch
+      const y1 = py * cosP - pz * sinP;
+      const z1 = py * sinP + pz * cosP;
+      // Rotación yaw
+      const x2 = px * cosY + z1 * sinY;
+      const z2 = -px * sinY + z1 * cosY;
+      // Coordenadas esféricas
+      const r = Math.sqrt(x2*x2 + y1*y1 + z2*z2);
+      const lon = Math.atan2(x2, z2); // -π..π
+      const lat = Math.asin(y1 / r);  // -π/2..π/2
+      // Mapear a pixel equirectangular
+      let u = (lon / (2*Math.PI) + 0.5) * sw;
+      let v = (0.5 - lat / Math.PI) * sh;
+      u = ((u % sw) + sw) % sw;
+      v = Math.max(0, Math.min(sh-1, v));
+      const iu = Math.floor(u), iv = Math.floor(v);
+      const idxSrc = (iv * sw + iu) * 4;
+      const idxDst = (y * outW + x) * 4;
+      outPx[idxDst] = srcPx[idxSrc];
+      outPx[idxDst+1] = srcPx[idxSrc+1];
+      outPx[idxDst+2] = srcPx[idxSrc+2];
+      outPx[idxDst+3] = 255;
+    }
+  }
+  ctx.putImageData(out, 0, 0);
+  return canvas.toDataURL('image/jpeg', 0.95);
+}
+
+// Obtiene la imagen panorama que Pannellum está mostrando (desde su blob URL)
+async function obtenerImagenPanoramaActual() {
+  // Pannellum guarda la fuente en config. Si no, la recargamos desde el backend.
+  try {
+    const cfg = visorPannellum.getConfig && visorPannellum.getConfig();
+    const src = cfg && cfg.panorama;
+    if (src) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise((resolve, reject) => {
+        img.onload = resolve; img.onerror = reject; img.src = src;
+      });
+      return img;
+    }
+  } catch (e) {}
+  // Fallback: volver a pedir la foto al backend
+  const url = new URL(BACKEND_URL);
+  url.searchParams.set('action', 'getFoto');
+  url.searchParams.set('fileId', fileId);
+  const res = await fetch(url.toString());
+  const data = await res.json();
+  if (!data.ok) throw new Error('No se pudo cargar la panorama');
+  const blobUrl = URL.createObjectURL(base64ABlob(data.contenidoBase64, 'image/jpeg'));
+  const img = new Image();
+  await new Promise((resolve, reject) => {
+    img.onload = resolve; img.onerror = reject; img.src = blobUrl;
+  });
+  return img;
+}
+
+function construirNombreCaptura() {
+  const now = new Date();
+  const hora = String(now.getHours()).padStart(2,'0') + '-' +
+               String(now.getMinutes()).padStart(2,'0') + '-' +
+               String(now.getSeconds()).padStart(2,'0');
+  const partes = [];
+  if (fotoInfo.carpetaNombre) partes.push(fotoInfo.carpetaNombre);
+  if (fotoInfo.nombre) partes.push(fotoInfo.nombre);
+  partes.push('captura');
+  partes.push(hora);
+  return partes.join('_').replace(/[^a-zA-Z0-9_\-ñÑáéíóúÁÉÍÓÚ ]/g,'').replace(/ +/g,'_') + '.jpg';
+}
+
+function descargarDataURL(dataURL, filename) {
+  const a = document.createElement('a');
+  a.href = dataURL;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+let toastTimeout = null;
+function mostrarToast(msg, tipo) {
+  const el = document.getElementById('toast-captura');
+  el.textContent = msg;
+  el.className = 'toast-captura visible' + (tipo ? ' '+tipo : '');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('visible'), 3000);
+}
 
 // ============================================================================
 // UTILIDADES
